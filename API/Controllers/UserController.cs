@@ -1,21 +1,33 @@
+using API.Data;
+using API.Entities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Namespace.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class UserController : ControllerBase
+public class UsersController(DataContext context) : ControllerBase
 {
-    private readonly ILogger<UserController> _logger;
-
-    public UserController(ILogger<UserController> logger)
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<AppUser>>> Get()
     {
-        _logger = logger;
+        var users = await context.Users.ToListAsync();
+        if (users == null || !users.Any())
+        {
+            return NotFound("No users found.");
+        }
+        return Ok(users);
     }
 
-    [HttpGet(Name = "GetUser")]
-    public IActionResult Get()
+    [HttpGet("{id:int}")]
+    public async Task<ActionResult<AppUser>> Get(int id)
     {
-        return Ok(new { Name = "John Doe", Age = 30 });
+        var user = await context.Users.FindAsync(id);
+        if (user == null)
+        {
+            return NotFound($"User with ID {id} not found.");
+        }
+        return Ok(user);
     }
 }
