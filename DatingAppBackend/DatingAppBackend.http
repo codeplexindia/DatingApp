@@ -1,0 +1,6 @@
+@DatingAppBackend_HostAddress = http://localhost:5118
+
+GET {{DatingAppBackend_HostAddress}}/user/
+Accept: application/json
+
+###
